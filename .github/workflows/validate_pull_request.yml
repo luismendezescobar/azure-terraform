@@ -47,22 +47,28 @@ jobs:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform init -backend-config="storage_account_name=$STORAGE_ACCOUNT" -backend-config="container_name=$CONTAINER_NAME" -backend-config="resource_group_name=$RESOURCE_GROUP_NAME"
+      run: |
+        cd github-actions-azure
+        terraform init -backend-config="storage_account_name=$STORAGE_ACCOUNT" -backend-config="container_name=$CONTAINER_NAME" -backend-config="resource_group_name=$RESOURCE_GROUP_NAME"
 
     # Run a Terraform fmt
     - name: Terraform format
       id: fmt
-      run: terraform fmt -check
+      run: |
+        cd github-actions-azure
+        terraform fmt -check
 
     # Run a Terraform validate
     - name: Terraform validate
       id: validate
-      if: success() || failure()
+      if: success()
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform validate -no-color
+      run: |
+        cd github-actions-azure
+        terraform validate -no-color
 
     # Run a Terraform plan
     - name: Terraform plan
@@ -71,7 +77,9 @@ jobs:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform plan -no-color
+      run: |
+        cd github-actions-azure
+        terraform plan -no-color
 
     # Add a comment to pull requests with plan results
     - name: Add Plan Comment
